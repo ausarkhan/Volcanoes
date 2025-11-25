@@ -4,4 +4,4 @@ class RSVP:
         self.user_id = user_id
         self.role = role
         self.created_at = None
-        self.status = "going"
+        self.status = None
