@@ -102,7 +102,13 @@ class Events:
 
         return True
     
-    
+    def update_event_time(self, new_start_time, new_end_time):
+        if self.validate_event_time(new_start_time, new_end_time):
+            self.start_time = new_start_time
+            self.end_time = new_end_time
+            self.updated_at = datetime.now()
+            return f"Event time successfully updated to start: '{self.start_time}', end: '{self.end_time}'."
+
 event1 = Events.create_event("Online Workshop", "Join us for a virtual workshop on Python.", "2023-10-01 10:00am", "2023-10-01 12:00pm", "Zoom")
 #print(event1.is_event_virtual())  
 event2 = Events.create_event("Local Meetup", "Meetup at the community center.", "2023-10-05 06:00pm", "2023-10-05 08:00pm", "123 Main St")
@@ -112,8 +118,11 @@ event3 = Events.create_event("How to win social media", "A lesson on creating an
 event4 = Events.create_event("Webinar on Data Science", "An in-depth webinar on data science techniques.", "2023-12-01 09:00am", "2023-12-01 11:00am", "http://datasciencewebinar.com")
 #print(event4.is_event_virtual())
 #print(event1)
-print(event1.update_event_name("Advanced Python Workshop"))
-print(event1)
-print(event1.update_event_name("Online Workshop dummy"))
-print(event1.update_event_name("  "))  
-print(event1.update_event_name("Test Event&!"))
+# print(event1.update_event_name("Advanced Python Workshop"))
+# print(event1)
+# print(event1.update_event_name("Online Workshop dummy"))
+# print(event1.update_event_name("  "))  
+# print(event1.update_event_name("Test Event&!"))
+print(event1.update_event_time("11:00am", "12:00pm"))
+#print(event1.update_event_time("2:00pm", "1:00pm"))
+#print(event1.update_event_time("11:00am", "01:00pm"))
