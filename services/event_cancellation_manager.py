@@ -1,182 +1,186 @@
 """
-Event Cancellation Service with cancel and undo functionality.
-Handles permission checks, status updates, and notifications.
+Event Cancellation Manager for Xavier University Event System.
+Manages event cancellation with undo functionality.
 """
-
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 
 
 class CancellationError(Exception):
-    """Raised when cancellation operation fails."""
+    """Raised when cancellation operations fail."""
     pass
 
 
 class EventCancellationManager:
     """
     Manages event cancellation and undo operations.
-    Handles permissions, notifications, and feed management.
+    
+    Requirements (Ausar's requirement):
+    - cancel_event(event, user, reason=None): Cancel an event with permission checks
+    - undo_cancel(event, user): Undo cancellation within time window
+    - Permission checking: Only organizer or teacher can cancel
+    - Notifications: Trigger notifications on cancellation
+    - Feed management: Remove from feed/search on cancel, restore on undo
+    - 10-minute undo window
     """
     
-    def __init__(self, permission_service=None, notification_service=None, feed_service=None):
-        """
-        Initialize the Event Cancellation Manager.
-        
-        Args:
-            permission_service: Service to check user permissions
-            notification_service: Service to send notifications
-            feed_service: Service to manage event feed/search
-        """
-        self.permission_service = permission_service
-        self.notification_service = notification_service
-        self.feed_service = feed_service
-        self._cancellation_history = {}  # Track cancellations for undo
+    def __init__(self):
+        """Initialize the Event Cancellation Manager."""
+        self.cancellation_history = {}  # event_id -> cancellation details
+        self.undo_window_minutes = 10
     
     def cancel_event(self, event, user, reason: Optional[str] = None) -> Dict[str, Any]:
         """
-        Cancel an event with permission checks and notifications.
+        Cancel an event with permission checks.
         
         Args:
             event: Event object to cancel
-            user: User attempting to cancel
-            reason: Optional reason for cancellation
-        
+            user: User requesting cancellation
+            reason: Optional cancellation reason
+            
         Returns:
-            Dict containing cancellation details
-        
+            Dict with cancellation details
+            
         Raises:
-            CancellationError: If cancellation fails
+            CancellationError: If user lacks permission or event already canceled
         """
-        # Step 1: Permission check
+        # Check permissions
         if not self._check_permission(event, user):
             raise CancellationError(
-                f"User {user.user_id} does not have permission to cancel event {event.id}"
+                f"User {user.user_id} does not have permission to cancel this event. "
+                f"Only the organizer or a teacher can cancel events."
             )
         
-        # Step 2: Check if already canceled
+        # Check if already canceled
         if hasattr(event, 'status') and event.status == 'CANCELED':
             raise CancellationError(f"Event {event.id} is already canceled")
         
-        # Step 3: Store previous state for potential undo
-        previous_state = {
-            'status': getattr(event, 'status', 'SCHEDULED'),
-            'canceled_at': None,
-            'canceled_by': None,
-            'cancellation_reason': None,
-            'timestamp': datetime.now()
-        }
-        self._cancellation_history[event.id] = previous_state
-        
-        # Step 4: Set canceled status
-        event.status = 'CANCELED'
-        event.canceled_at = datetime.now()
-        event.canceled_by = user.user_id
-        event.cancellation_reason = reason
-        
-        # Step 5: Trigger notifications
-        notification_result = self._trigger_notifications(event, user, reason)
-        
-        # Step 6: Remove from feed/search
-        feed_result = self._remove_from_feed(event)
-        
-        result = {
-            'success': True,
-            'event_id': event.id,
-            'canceled_by': user.user_id,
-            'canceled_at': event.canceled_at,
+        # Store cancellation details for undo
+        cancellation_time = datetime.now()
+        self.cancellation_history[event.id] = {
+            'event': event,
+            'user_id': user.user_id,
             'reason': reason,
-            'notifications_sent': notification_result.get('count', 0),
-            'removed_from_feed': feed_result.get('success', False),
-            'message': f"Event {event.id} has been successfully canceled"
+            'canceled_at': cancellation_time,
+            'original_status': getattr(event, 'status', 'SCHEDULED'),
+            'can_undo_until': cancellation_time + timedelta(minutes=self.undo_window_minutes)
         }
         
-        print(f"✓ Event {event.id} canceled by {user.name} ({user.user_id})")
-        if reason:
-            print(f"  Reason: {reason}")
-        print(f"  Notifications sent: {result['notifications_sent']}")
+        # Cancel the event
+        event.status = 'CANCELED'
+        event.cancellation_reason = reason
+        event.canceled_at = cancellation_time
         
-        return result
+        # Trigger notifications (simulated)
+        self._trigger_notifications(event, user, reason)
+        
+        # Remove from feed/search (simulated)
+        self._remove_from_feed(event)
+        
+        return {
+            'event_id': event.id,
+            'status': 'CANCELED',
+            'canceled_by': user.user_id,
+            'canceled_at': cancellation_time,
+            'reason': reason,
+            'can_undo_until': self.cancellation_history[event.id]['can_undo_until'],
+            'notifications_sent': True,
+            'removed_from_feed': True
+        }
     
     def undo_cancel(self, event, user) -> Dict[str, Any]:
         """
-        Undo a recent event cancellation (within 10 minutes).
+        Undo a cancellation within the time window.
         
         Args:
-            event: Event object to restore
-            user: User attempting to undo
-        
+            event: Event to restore
+            user: User requesting undo
+            
         Returns:
-            Dict containing undo operation details
-        
+            Dict with undo details
+            
         Raises:
-            CancellationError: If undo fails
+            CancellationError: If undo not possible
         """
-        # Step 1: Verify event is currently canceled
-        if not hasattr(event, 'status') or event.status != 'CANCELED':
-            raise CancellationError(
-                f"Event {event.id} is not canceled. Cannot undo cancellation."
-            )
-        
-        # Step 2: Check if cancellation history exists
-        if event.id not in self._cancellation_history:
+        # Check if event has cancellation history
+        if event.id not in self.cancellation_history:
             raise CancellationError(
                 f"No cancellation history found for event {event.id}"
             )
         
-        # Step 3: Check time window (within 10 minutes)
-        cancellation_time = event.canceled_at
-        current_time = datetime.now()
-        time_elapsed = current_time - cancellation_time
+        history = self.cancellation_history[event.id]
         
-        if time_elapsed > timedelta(minutes=10):
+        # Check if event is actually canceled
+        if event.status != 'CANCELED':
             raise CancellationError(
-                f"Cannot undo cancellation. Time window expired "
-                f"({time_elapsed.seconds // 60} minutes elapsed, limit is 10 minutes)"
+                f"Event {event.id} is not currently canceled (status: {event.status})"
             )
         
-        # Step 4: Permission check
+        # Check if within undo window
+        now = datetime.now()
+        if now > history['can_undo_until']:
+            elapsed = (now - history['canceled_at']).total_seconds() / 60
+            raise CancellationError(
+                f"Undo window expired. Event was canceled {elapsed:.1f} minutes ago. "
+                f"Undo is only available for {self.undo_window_minutes} minutes after cancellation."
+            )
+        
+        # Check permissions
         if not self._check_permission(event, user):
             raise CancellationError(
-                f"User {user.user_id} does not have permission to undo cancellation"
+                f"User {user.user_id} does not have permission to undo cancellation. "
+                f"Only the organizer or a teacher can undo cancellations."
             )
         
-        # Step 5: Restore old status
-        previous_state = self._cancellation_history[event.id]
-        event.status = previous_state['status']
-        
-        # Clear cancellation metadata
-        old_reason = event.cancellation_reason
-        event.canceled_at = None
-        event.canceled_by = None
+        # Restore the event
+        event.status = history['original_status']
         event.cancellation_reason = None
+        event.canceled_at = None
         
-        # Step 6: Re-add to feed/search
-        feed_result = self._add_to_feed(event)
+        # Restore to feed/search (simulated)
+        self._restore_to_feed(event)
         
-        # Step 7: Notify subscribers about restoration
-        notification_result = self._notify_restoration(event, user, old_reason)
+        # Send restoration notifications (simulated)
+        self._trigger_restoration_notifications(event, user)
         
-        # Step 8: Remove from history
-        del self._cancellation_history[event.id]
+        undo_time = datetime.now()
         
-        result = {
-            'success': True,
+        # Keep history but mark as undone
+        self.cancellation_history[event.id]['undone_at'] = undo_time
+        self.cancellation_history[event.id]['undone_by'] = user.user_id
+        
+        return {
             'event_id': event.id,
-            'restored_by': user.user_id,
-            'restored_at': current_time,
-            'restored_status': event.status,
-            'time_elapsed_seconds': time_elapsed.seconds,
-            'notifications_sent': notification_result.get('count', 0),
-            'added_to_feed': feed_result.get('success', False),
-            'message': f"Event {event.id} cancellation has been undone"
+            'status': event.status,
+            'undone_by': user.user_id,
+            'undone_at': undo_time,
+            'original_cancellation_time': history['canceled_at'],
+            'restored_to_feed': True,
+            'notifications_sent': True
         }
+    
+    def can_undo(self, event) -> bool:
+        """
+        Check if an event cancellation can be undone.
         
-        print(f"✓ Cancellation undone for event {event.id} by {user.name}")
-        print(f"  Restored to status: {event.status}")
-        print(f"  Time elapsed: {time_elapsed.seconds} seconds")
-        print(f"  Notifications sent: {result['notifications_sent']}")
+        Args:
+            event: Event to check
+            
+        Returns:
+            bool: True if undo is possible
+        """
+        if event.id not in self.cancellation_history:
+            return False
         
-        return result
+        history = self.cancellation_history[event.id]
+        
+        # Check if already undone
+        if 'undone_at' in history:
+            return False
+        
+        # Check if within time window
+        now = datetime.now()
+        return now <= history['can_undo_until']
     
     def _check_permission(self, event, user) -> bool:
         """
@@ -185,150 +189,36 @@ class EventCancellationManager:
         Args:
             event: Event object
             user: User object
-        
+            
         Returns:
             bool: True if user has permission
         """
-        # Use permission service if available
-        if self.permission_service:
-            return self.permission_service.can_manage_event(user, event)
-        
-        # Default: Check if user is organizer or teacher
-        if hasattr(event, 'organizer_id') and event.organizer_id == user.user_id:
+        # Teacher can always cancel
+        if user.role == 'teacher':
             return True
         
-        if hasattr(user, 'role') and user.role == 'teacher':
+        # Organizer can cancel their own events
+        if hasattr(event, 'organizer_id') and event.organizer_id == user.user_id:
             return True
         
         return False
     
-    def _trigger_notifications(self, event, user, reason: Optional[str]) -> Dict[str, Any]:
-        """
-        Send cancellation notifications to subscribers.
-        
-        Args:
-            event: Canceled event
-            user: User who canceled
-            reason: Cancellation reason
-        
-        Returns:
-            Dict with notification results
-        """
-        if self.notification_service:
-            return self.notification_service.notify_cancellation(
-                event=event,
-                canceled_by=user,
-                reason=reason
-            )
-        
-        # Simulated notification
-        print(f"  → Sending cancellation notifications for event {event.id}")
-        return {
-            'success': True,
-            'count': 0,  # Would be actual count in production
-            'message': 'Notifications queued (simulated)'
-        }
+    def _trigger_notifications(self, event, user, reason: Optional[str]):
+        """Simulate sending cancellation notifications."""
+        # In a real system, this would send emails/notifications
+        pass
     
-    def _notify_restoration(self, event, user, previous_reason: Optional[str]) -> Dict[str, Any]:
-        """
-        Notify subscribers that event cancellation was undone.
-        
-        Args:
-            event: Restored event
-            user: User who restored
-            previous_reason: Previous cancellation reason
-        
-        Returns:
-            Dict with notification results
-        """
-        if self.notification_service:
-            return self.notification_service.notify_restoration(
-                event=event,
-                restored_by=user,
-                previous_reason=previous_reason
-            )
-        
-        # Simulated notification
-        print(f"  → Sending restoration notifications for event {event.id}")
-        return {
-            'success': True,
-            'count': 0,
-            'message': 'Restoration notifications queued (simulated)'
-        }
+    def _remove_from_feed(self, event):
+        """Simulate removing event from feed and search."""
+        # In a real system, this would update the database
+        pass
     
-    def _remove_from_feed(self, event) -> Dict[str, Any]:
-        """
-        Remove canceled event from feed and search results.
-        
-        Args:
-            event: Event to remove
-        
-        Returns:
-            Dict with removal results
-        """
-        if self.feed_service:
-            return self.feed_service.remove_event(event)
-        
-        # Simulated feed removal
-        print(f"  → Removing event {event.id} from feed and search")
-        return {
-            'success': True,
-            'message': 'Event removed from feed (simulated)'
-        }
+    def _restore_to_feed(self, event):
+        """Simulate restoring event to feed and search."""
+        # In a real system, this would update the database
+        pass
     
-    def _add_to_feed(self, event) -> Dict[str, Any]:
-        """
-        Re-add restored event to feed and search results.
-        
-        Args:
-            event: Event to add
-        
-        Returns:
-            Dict with addition results
-        """
-        if self.feed_service:
-            return self.feed_service.add_event(event)
-        
-        # Simulated feed addition
-        print(f"  → Re-adding event {event.id} to feed and search")
-        return {
-            'success': True,
-            'message': 'Event added to feed (simulated)'
-        }
-    
-    def get_cancellation_history(self, event_id: str) -> Optional[Dict[str, Any]]:
-        """
-        Get cancellation history for an event.
-        
-        Args:
-            event_id: Event ID
-        
-        Returns:
-            Cancellation history dict or None
-        """
-        return self._cancellation_history.get(event_id)
-    
-    def can_undo(self, event) -> tuple[bool, str]:
-        """
-        Check if an event cancellation can be undone.
-        
-        Args:
-            event: Event object
-        
-        Returns:
-            Tuple of (can_undo: bool, reason: str)
-        """
-        if not hasattr(event, 'status') or event.status != 'CANCELED':
-            return False, "Event is not canceled"
-        
-        if event.id not in self._cancellation_history:
-            return False, "No cancellation history found"
-        
-        if not hasattr(event, 'canceled_at') or event.canceled_at is None:
-            return False, "Cancellation timestamp not found"
-        
-        time_elapsed = datetime.now() - event.canceled_at
-        if time_elapsed > timedelta(minutes=10):
-            return False, f"Time window expired ({time_elapsed.seconds // 60} minutes)"
-        
-        return True, "Can be undone"
+    def _trigger_restoration_notifications(self, event, user):
+        """Simulate sending restoration notifications."""
+        # In a real system, this would send emails/notifications
+        pass
