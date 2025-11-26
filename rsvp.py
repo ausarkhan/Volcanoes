@@ -5,3 +5,6 @@ class RSVP:
         self.role = role
         self.created_at = None
         self.status = None
+
+    def __repr__(self):
+        return (f"RSVP(user_id={self.user_id}, role={self.role}, status={self.status}, event_title='{self.event.title}')")
