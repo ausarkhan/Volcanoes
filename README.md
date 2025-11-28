@@ -9,6 +9,8 @@
 - [ ] **Ausar** must finish his pushes to our repo by 8 PM on Dec 1st and then check this box.
 - [ ] **Ja'Nya** must do one last check that the code builds, runs, and all the tests run by 10 PM on Dec 1st and then check this box.
 - [ ] **Ja'Nya** must "Project Release" tag our repo. 
+- [ ] Everyone must complete the Brightspace survey to earn the final points for Assignment08.
+- [ ] Everyone should complete the Class Climate survey to help Dr. Edwards improve her teaching.
 
 ## Team members: 
 Designer - Jon Johnson(john205)
