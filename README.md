@@ -26,26 +26,6 @@ event = service.create_course_event(
 )
 ```
 
-### Event Cancellation
-
-```python
-from datetime import datetime, timedelta
-from models.event import Event
-from services.event_cancellation_service import EventCancellationService
-
-event = Event(
-    id="evt_001",
-    title="Database Review Session",
-    starts_at=datetime.now() + timedelta(hours=10),
-    ends_at=datetime.now() + timedelta(hours=12)
-)
-
-service = EventCancellationService()
-validation = service.validate_cancellation_reason(event, "Family emergency")
-event.cancel("Family emergency", datetime.now())
-notification_result = service.notify_rsvp_cancellation(event)
-```
-
 ## Examples
 
 Run the examples to see the system in action:
@@ -53,9 +33,4 @@ Run the examples to see the system in action:
 ```bash
 # Course event creation demo
 python examples/p1_course_event_example.py
-
-# Event cancellation demos
-python examples/rp1_validation_example.py
-python examples/rp2_notification_example.py
-python examples/rp3_calendar_sync_example.py
 ```
