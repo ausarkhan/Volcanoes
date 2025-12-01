@@ -1,7 +1,7 @@
 from rsvp import RSVP
 from datetime import datetime
 from events import Events
-from user import User
+from models.user import User
 
 # User Story #37: Implement RSVP functionality (create, cancel, list user RSVPs).
 # Backfill commit to document feature implementation.
