@@ -4,7 +4,7 @@ This service handles creation of course-related events such as exam review sessi
 """
 from datetime import datetime
 from typing import Dict, Any, Optional
-from models.event import Event
+from events import Events as Event
 from models.override_request import OverrideRequest
 
 

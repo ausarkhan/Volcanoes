@@ -1,79 +1,66 @@
-# Xavier University Event Management System
+# Team Volcanoes
 
-Event management functionality for Xavier University professors and students.
+## Final Release Checklist
 
-## Features
+- [ ] README states purpose, contributors, and how to build, run, and test all the code from the CLI. Build and run should **not** assume everyone is using an IDE (no "Run" button or VS Code–specific commands).
+- [ ] SDD has the project description, outline, architecture (including UML class diagrams), and all project user stories and use cases.
+- [ ] Each team member must update our team's **Statement of Work** shared Excel spreadsheet.  
+      Your grade on this assignment is based ONLY on:  
+      - the quality of your use cases  
+      - your accepted GitHub pull requests  
+      - 10% peer evaluation from your teammates
+- [ ] **Ja'Nya** must finish her pushes to the repo by **8 PM on Dec 1st**.
+- [ ] **Jon** must finish his pushes to the repo by **8 PM on Dec 1st**.
+- [ ] **Ausar** must finish his pushes to the repo by **8 PM on Dec 1st**.
+- [ ] **Ja'Nya** must do one last check that the code builds, runs, and that all tests run by **10 PM on Dec 1st**.
+- [ ] **Ja'Nya** must apply the **"Project Release"** tag to the repo.
+- [ ] Everyone must complete the **Brightspace survey** for Assignment08.
+- [ ] Everyone should complete the **Class Climate survey** to help Dr. Edwards improve her teaching.
 
-- **Course Events (P1)**: Professors can create exam review sessions and course-related events
-- **Event Cancellation (RP1)**: Require reasons for late cancellations (< 24 hours)
-- **RSVP Notifications (RP2)**: Automatic notifications when events are canceled
-- **Calendar Sync (RP3)**: Sync canceled events to Google Calendar, Outlook, and iCal
-- **Feed Management**: Event feed with automatic filtering of canceled events
-- **Notification Service**: Notify followers when events are canceled
+---
 
-## Installation
+## Team Members
 
-No external dependencies required. This project uses Python 3.x standard library.
+- **Designer:** Jon Johnson (john205)  
+- **SWE:** Ausar Khan (akhan5)  
+- **Lead:** Ja'Nya Ward (jward12)
 
-Optional: Install `icalendar` for enhanced calendar functionality:
+---
+
+## Project Priority (High → Low)
+
+1. CPSC Events  
+2. CPSC Core Curriculum Recommender  
+3. CPSC Friends  
+4. CPSC Help Desk  
+5. CPSC Study Buddies  
+6. CPSC Course Offering  
+
+---
+
+### NOTE  
+**Get Dr. Edwards' written approval before using any API or package.**
+
+
+## Project Purpose:
+A console-based program where CS/CIS/BINF majors, minors, and faculty can create, edit, remove, list, search, RSVP, and get alerts for events based on their notifications/alert settings. Key features include event notifications, RSVP management, and category-based subscriptions.
+
+## How to build:
 ```bash
-pip install icalendar
+# Clone the repo
+git clone https://github.com/your-team/repo.git
+cd repo
+
+# (Optional) create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate     
 ```
 
-## How to Run
-
-### Run Examples
-
-Each use case has a demo example you can run:
-
-**P1 - Course Event (Professor creates exam review session):**
+## Run instructions:
 ```bash
-python examples/p1_course_event_example.py
+# Run the main program
+python3 main.py
+
+# Run all unit tests
+python3 -m unittest discover -s tests
 ```
-
-**RP1 - Validation (Require reason for late cancellations):**
-```bash
-python examples/rp1_validation_example.py
-```
-
-**RP2 - Notifications (RSVP-based cancellation notifications):**
-```bash
-python examples/rp2_notification_example.py
-```
-
-**RP3 - Calendar Sync (Sync cancellations to calendars):**
-```bash
-python examples/rp3_calendar_sync_example.py
-```
-
-### Run Tests
-
-Run all tests:
-```bash
-python -m unittest discover tests/
-```
-
-Run specific test file:
-```bash
-python -m unittest tests/test_feed_service.py
-python -m unittest tests/test_event_cancellation_service.py
-python -m unittest tests/test_calendar_sync_service.py
-```
-
-## Project Structure
-
-```
-models/              # Data models (Event, RSVP, FeedService, NotificationService)
-services/            # Business logic services
-examples/            # Demo scripts for each use case
-tests/               # Unit tests
-utils/               # Utility functions
-```
-
-## Use Cases Implemented
-
-- **P1**: Course Event (Professor) - SHA: beb62af
-- **RP1**: Require Reason for Late Cancellations - SHA: c552fd9
-- **RP2**: RSVP-Based Cancellation Notifications - SHA: c552fd9
-- **RP3**: Calendar Sync for Cancellations - SHA: c552fd9
-- **Feed & Notification Services** - SHA: 9886a0b, c0edce3, dd1fe1a, 003cb3c

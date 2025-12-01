@@ -5,7 +5,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import unittest
 from datetime import datetime, timedelta
-from models.event import Event
+from events import Events as Event
 from models.rsvp import RSVP
 from models.feed_service import FeedService
 from models.notification_service import NotificationService as FollowerNotificationService
