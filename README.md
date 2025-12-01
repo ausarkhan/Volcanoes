@@ -40,3 +40,24 @@
 
 ### NOTE  
 **Get Dr. Edwards’ written approval before using any API or package.**
+
+
+## Project Purpose:
+A console-based program where CS/CIS/BINF majors, minors, and faculty can create, edit, remove, list, search, RSVP, and get alerts for events based on their notifications/alert settings.Key features include event notifications, RSVP management, and category-based subscriptions.
+
+## How to build:
+```bash
+- Clone the repo
+      git clone https://github.com/your-team/repo.git
+      cd repo
+
+- (Optional) create virtual environment
+      python3 -m venv venv
+      source venv/bin/activate  
+      venv\Scripts\activate     
+
+## Run instructions:
+- Run the main program
+      python3 main.py
+-  Run all unit tests
+      python3 -m unittest discover -s tests
