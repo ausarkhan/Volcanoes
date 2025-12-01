@@ -5,7 +5,9 @@ for late cancellations that require a reason.
 """
 from datetime import datetime, timedelta
 from typing import Dict, Any, List
-from models.event import Event
+from events import Events
+from models.feed_service import FeedService
+from models.notification_service import NotificationService as FollowerNotificationService
 from services.rsvp_service import RSVPService
 from utils.notification_utils import NotificationService, NotificationLog
 
@@ -21,7 +23,9 @@ class EventCancellationService:
     def __init__(
         self,
         rsvp_service: RSVPService = None,
-        notification_service: NotificationService = None
+        notification_service: NotificationService = None,
+        feed_service: FeedService = None,
+        follower_notification_service: FollowerNotificationService = None
     ):
         """
         Initialize EventCancellationService.
@@ -29,11 +33,15 @@ class EventCancellationService:
         Args:
             rsvp_service: Service for retrieving RSVPs (optional, will create if not provided)
             notification_service: Service for sending notifications (optional, will create if not provided)
+            feed_service: Service for managing event feed (optional, will create if not provided)
+            follower_notification_service: Service for notifying followers (optional, will create if not provided)
         """
         self.rsvp_service = rsvp_service or RSVPService()
         self.notification_service = notification_service or NotificationService()
+        self.feed_service = feed_service or FeedService()
+        self.follower_notification_service = follower_notification_service or FollowerNotificationService()
     
-    def validate_cancellation_reason(self, event: Event, reason: str) -> Dict[str, Any]:
+    def validate_cancellation_reason(self, event: Events, reason: str) -> Dict[str, Any]:
         """
         Validate cancellation reason based on timing.
         
@@ -98,7 +106,7 @@ class EventCancellationService:
         
         return validation_result
     
-    def notify_rsvp_cancellation(self, event: Event) -> Dict[str, Any]:
+    def notify_rsvp_cancellation(self, event: Events) -> Dict[str, Any]:
         """
         Notify students who RSVP'd to the event about its cancellation.
         
@@ -173,3 +181,53 @@ class EventCancellationService:
             'notified_students': notified_students,
             'timestamp': now
         }
+    
+    def cancel_event(self, event: Events, reason: str = "") -> Dict[str, Any]:
+        """
+        Cancel an event and handle all related operations.
+        
+        This method integrates the feed and notification services created by Janya/Jon:
+        - Validates the cancellation reason
+        - Marks the event as canceled
+        - Removes event from feed using FeedService.remove_event()
+        - Notifies followers using NotificationService.notify_followers()
+        - Notifies RSVP'd students
+        
+        Args:
+            event: The event to cancel
+            reason: Cancellation reason (required for late cancellations)
+            
+        Returns:
+            Dict containing:
+                - validation_result: Validation details
+                - event_id: The event ID
+                - removed_from_feed: bool indicating if removed from feed
+                - followers_notified: bool indicating if followers were notified
+                - rsvp_notification_result: Result from RSVP notifications
+        
+        Raises:
+            ValidationError: If validation fails
+        """
+        # Validate cancellation reason
+        validation_result = self.validate_cancellation_reason(event, reason)
+        
+        # Cancel the event
+        event.cancel(reason, datetime.now())
+        
+        # Remove from feed (Janya/Jon's FeedService)
+        self.feed_service.remove_event(event)
+        
+        # Notify followers (Janya/Jon's NotificationService)
+        self.follower_notification_service.notify_followers(event)
+        
+        # Notify RSVP'd students
+        rsvp_notification_result = self.notify_rsvp_cancellation(event)
+        
+        return {
+            'validation_result': validation_result,
+            'event_id': event.id,
+            'removed_from_feed': True,
+            'followers_notified': True,
+            'rsvp_notification_result': rsvp_notification_result
+        }
+

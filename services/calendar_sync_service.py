@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Dict, Any, List
 from icalendar import Calendar, Event as ICSEvent
-from models.event import Event
+from events import Events
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -33,7 +33,7 @@ class CalendarSyncService:
     def __init__(self):
         self._sync_results: List[SyncResult] = []
     
-    def generate_ics_data(self, event: Event) -> str:
+    def generate_ics_data(self, event: Events) -> str:
         """
         Generate ICS (iCalendar) data for an event.
         
@@ -70,7 +70,7 @@ class CalendarSyncService:
         
         return cal.to_ical().decode('utf-8')
     
-    def sync_to_google_calendar(self, event: Event, ics_data: str) -> bool:
+    def sync_to_google_calendar(self, event: Events, ics_data: str) -> bool:
         """
         Sync event to Google Calendar.
         
@@ -95,7 +95,7 @@ class CalendarSyncService:
         # For simulation, assume success
         return True
     
-    def sync_to_outlook(self, event: Event, ics_data: str) -> bool:
+    def sync_to_outlook(self, event: Events, ics_data: str) -> bool:
         """
         Sync event to Outlook/Office 365.
         
@@ -122,7 +122,7 @@ class CalendarSyncService:
     
     def sync_event(
         self,
-        event: Event,
+        event: Events,
         integrations: List[str] = None
     ) -> Dict[str, Any]:
         """
