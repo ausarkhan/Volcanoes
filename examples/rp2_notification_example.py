@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from datetime import datetime, timedelta
-from models.event import Event
+from events import Events as Event
 from models.rsvp import RSVP
 from services.event_cancellation_service import EventCancellationService
 from services.rsvp_service import RSVPService

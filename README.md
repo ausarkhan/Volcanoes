@@ -2,7 +2,7 @@
 
 ## Final Release Checklist
 
-- [ ] README states purpose, contributors, and how to build, run, and test all the code from the CLI. Build and run should **not** assume everyone is using an IDE (no “Run” button or VS Code–specific commands).
+- [ ] README states purpose, contributors, and how to build, run, and test all the code from the CLI. Build and run should **not** assume everyone is using an IDE (no "Run" button or VS Code–specific commands).
 - [ ] SDD has the project description, outline, architecture (including UML class diagrams), and all project user stories and use cases.
 - [ ] Each team member must update our team's **Statement of Work** shared Excel spreadsheet.  
       Your grade on this assignment is based ONLY on:  
@@ -39,25 +39,28 @@
 ---
 
 ### NOTE  
-**Get Dr. Edwards’ written approval before using any API or package.**
+**Get Dr. Edwards' written approval before using any API or package.**
 
 
 ## Project Purpose:
-A console-based program where CS/CIS/BINF majors, minors, and faculty can create, edit, remove, list, search, RSVP, and get alerts for events based on their notifications/alert settings.Key features include event notifications, RSVP management, and category-based subscriptions.
+A console-based program where CS/CIS/BINF majors, minors, and faculty can create, edit, remove, list, search, RSVP, and get alerts for events based on their notifications/alert settings. Key features include event notifications, RSVP management, and category-based subscriptions.
 
 ## How to build:
 ```bash
-- Clone the repo
-      git clone https://github.com/your-team/repo.git
-      cd repo
+# Clone the repo
+git clone https://github.com/your-team/repo.git
+cd repo
 
-- (Optional) create virtual environment
-      python3 -m venv venv
-      source venv/bin/activate  
-      venv\Scripts\activate     
+# (Optional) create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate     
+```
 
 ## Run instructions:
-- Run the main program
-      python3 main.py
--  Run all unit tests
-      python3 -m unittest discover -s tests
+```bash
+# Run the main program
+python3 main.py
+
+# Run all unit tests
+python3 -m unittest discover -s tests
+```
