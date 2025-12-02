@@ -1,5 +1,5 @@
 """Notification service for event notifications."""
-from models.event import Event
+from events import Events as Event
 
 
 class NotificationService:

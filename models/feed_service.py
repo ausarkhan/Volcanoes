@@ -1,6 +1,6 @@
 """Feed service for managing event feeds."""
 from typing import List
-from models.event import Event
+from events import Events as Event
 
 
 class FeedService:
