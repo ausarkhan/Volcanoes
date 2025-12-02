@@ -1,0 +1,2 @@
+20251120 | Ja'Nya Ward | Issues discussed: Start planning earlier to have more time to code so more use cases can be completed | Actions: Created MMP list to Trello board, scheduled next meeting
+20251120 | Jon Johnson | Issues discussed: Communicating more effectively and continuously  pushing code to GitHub | Actions: Researched the importance of CI

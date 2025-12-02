@@ -1,7 +1,7 @@
 """Models for Xavier course management system."""
-from .event import Event
+from .events import Events
 from .rsvp import RSVP
-from .feed_service import FeedService
-from .notification_service import NotificationService
+from .user import User
+from .alert import Alert
 
-__all__ = ['Event', 'RSVP', 'FeedService', 'NotificationService']
+__all__ = ['Event', 'RSVP', 'User', 'Alert']
