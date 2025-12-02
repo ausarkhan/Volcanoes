@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 Xavier University Event Management System - Main Driver
 
@@ -369,13 +368,6 @@ def demo_integrated_workflow():
     print(f"✅ Synced to {sync_result['integrations_synced']} calendar(s)")
     
     print(f"\n🎉 Complete workflow executed successfully!")
-
-=======
-from events import Events
-from rsvp import RSVP
-from rsvp_service import RSVPService
-from filter_event import FilterEvents
->>>>>>> e2cc2e9 (Add import statements to driver)
 
 def main():
     """Run all demonstrations."""
