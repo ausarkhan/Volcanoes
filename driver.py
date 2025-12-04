@@ -369,7 +369,6 @@ def demo_integrated_workflow():
     
     print(f"\n🎉 Complete workflow executed successfully!")
 
-
 def main():
     """Run all demonstrations."""
     print("\n")

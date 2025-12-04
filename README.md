@@ -1,32 +1,69 @@
 # Team Volcanoes
 
-## What the Code Does When You Run It
 
-When you run `python3 driver.py`, the program demonstrates the complete Xavier University Event Management System with the following features:
+## What happens when Dr. Edwards runs your code ($ python main.py)
+main.py': [Errno 2] No such file or directory
 
-1. **USE CASE P1: COURSE EVENT (PROFESSOR)** - Demonstrates a professor creating a course-related event (CS101 Final Exam Review Session) with automatic section authorization
-2. **FEED SERVICE: EVENT FEED MANAGEMENT** - Shows adding events to the feed, displaying feed contents, canceling events, and removing them from the feed
-3. **NOTIFICATION SERVICE: FOLLOWER NOTIFICATIONS** - Demonstrates notifying followers when events are created or updated
-4. **USE CASE RP1: REQUIRE REASON FOR LATE CANCELLATIONS** - Validates cancellation reasons for events starting within 24 hours (two scenarios: with and without reasons)
-5. **USE CASE RP2: RSVP-BASED CANCELLATION NOTIFICATIONS** - Shows cancellation notifications sent to students who RSVP'd to an event, with urgency flags for events starting soon
-6. **USE CASE RP3: CALENDAR SYNC FOR CANCELLATIONS** - Demonstrates ICS calendar generation and syncing canceled events to external calendars (Google Calendar, Outlook)
-7. **INTEGRATED WORKFLOW: COMPLETE EVENT LIFECYCLE** - End-to-end demonstration of creating an event, adding to feed, RSVPs, validation, cancellation, notifications, and calendar sync
+python3 driver.py
+Driver started
+Driver ends
 
-The driver outputs detailed success messages, emoji indicators, and structured information showing each feature in action.
+## What happens when Dr. Edwards runs your tests ($ python main.py)
 
-## What the Code Does When You Run Tests
+python3 -m unittest discover -s tests
+EEEEE
+======================================================================
+ERROR: test_calendar_sync_service (unittest.loader._FailedTest.test_calendar_sync_service)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_calendar_sync_service
+...
+test_calendar_sync_service.py", line 16
+    """Test ICS generation for canceled event includes CANCELLED status."""
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndentationError: expected an indented block after function definition on line 15
 
-When you run `python3 -m unittest discover -s tests`, the test suite runs the following test modules:
 
-1. **test_calendar_sync_service.py** - Tests ICS calendar data generation and syncing to external calendar integrations
-2. **test_event_cancellation_manager.py** - Tests the event cancellation manager functionality
-3. **test_event_cancellation_service.py** - Tests event cancellation validation rules, late cancellation detection, and reason requirements
-4. **test_feed_service.py** - Tests adding/removing events from the feed and feed management operations
-5. **test_user_story_8.py** - Integration tests for the complete user story workflow
+======================================================================
+ERROR: test_event_cancellation_manager (unittest.loader._FailedTest.test_event_cancellation_manager)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_event_cancellation_manager
+...
+test_event_cancellation_manager.py", line 74
+    reason="De
+           ^
+SyntaxError: unterminated string literal (detected at line 74)
 
-The test suite validates all service functionality, edge cases, error handling, and integration between components. All tests should pass with "OK" status if the code is working correctly.
 
----
+======================================================================
+ERROR: test_event_cancellation_service (unittest.loader._FailedTest.test_event_cancellation_service)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_event_cancellation_service
+    """Test late cancellation (< 24 hours) with valid reason passes validation."""
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndentationError: expected an indented block after function definition on line 20
+
+
+======================================================================
+ERROR: test_feed_service (unittest.loader._FailedTest.test_feed_service)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_feed_service
+...
+ModuleNotFoundError: No module named 'models.events'
+
+
+======================================================================
+ERROR: test_user_story_8 (unittest.loader._FailedTest.test_user_story_8)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_user_story_8
+...
+ModuleNotFoundError: No module named 'models.events'
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.000s
+
+FAILED (errors=5)
+
 
 ## Final Release Checklist
 
