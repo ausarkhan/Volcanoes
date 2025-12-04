@@ -1,5 +1,70 @@
 # Team Volcanoes
 
+## What happens when Dr. Edwards runs your code ($ python main.py)
+$ python3 main.py
+main.py': [Errno 2] No such file or directory
+
+$ python3 driver.py
+Driver started
+Driver ends
+
+## What happens when Dr. Edwards runs your tests ($ python main.py)
+
+python3 -m unittest discover -s tests
+EEEEE
+======================================================================
+ERROR: test_calendar_sync_service (unittest.loader._FailedTest.test_calendar_sync_service)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_calendar_sync_service
+...
+test_calendar_sync_service.py", line 16
+    """Test ICS generation for canceled event includes CANCELLED status."""
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndentationError: expected an indented block after function definition on line 15
+
+
+======================================================================
+ERROR: test_event_cancellation_manager (unittest.loader._FailedTest.test_event_cancellation_manager)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_event_cancellation_manager
+...
+test_event_cancellation_manager.py", line 74
+    reason="De
+           ^
+SyntaxError: unterminated string literal (detected at line 74)
+
+
+======================================================================
+ERROR: test_event_cancellation_service (unittest.loader._FailedTest.test_event_cancellation_service)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_event_cancellation_service
+    """Test late cancellation (< 24 hours) with valid reason passes validation."""
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndentationError: expected an indented block after function definition on line 20
+
+
+======================================================================
+ERROR: test_feed_service (unittest.loader._FailedTest.test_feed_service)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_feed_service
+...
+ModuleNotFoundError: No module named 'models.events'
+
+
+======================================================================
+ERROR: test_user_story_8 (unittest.loader._FailedTest.test_user_story_8)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_user_story_8
+...
+ModuleNotFoundError: No module named 'models.events'
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.000s
+
+FAILED (errors=5)
+
+
 ## Final Release Checklist
 
 - [ ] README states purpose, contributors, and how to build, run, and test all the code from the CLI. Build and run should **not** assume everyone is using an IDE (no "Run" button or VS Code–specific commands).
