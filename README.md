@@ -1,10 +1,9 @@
 # Team Volcanoes
 
 ## What happens when Dr. Edwards runs your code ($ python main.py)
-$ python3 main.py
 main.py': [Errno 2] No such file or directory
 
-$ python3 driver.py
+python3 driver.py
 Driver started
 Driver ends
 
