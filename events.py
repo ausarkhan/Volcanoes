@@ -5,15 +5,36 @@ import re
 # Backfill commit documenting implementation.
 
 class Events:
-    def __init__(self, title, description, start_time, end_time, location):
+    def __init__(self, title=None, description=None, start_time=None, end_time=None, location=None,
+                 id=None, starts_at=None, ends_at=None, organizer_id=None, organizer_name=None, status=None):
+        # Support both old and new interfaces
+        self.id = id
         self.title = title
         self.description = description
-        self.start_time = start_time
-        self.end_time = end_time
+        
+        # Support both start_time/end_time and starts_at/ends_at
+        if starts_at is not None:
+            self.starts_at = starts_at
+            self.start_time = starts_at
+        else:
+            self.start_time = start_time
+            self.starts_at = start_time
+            
+        if ends_at is not None:
+            self.ends_at = ends_at
+            self.end_time = ends_at
+        else:
+            self.end_time = end_time
+            self.ends_at = end_time
+        
         self.location = location
+        self.organizer_id = organizer_id
+        self.organizer_name = organizer_name
         self.created_at = None
         self.updated_at = None
-        self.status = "active"
+        self.status = status if status is not None else "active"
+        self.cancellation_reason = None
+        self.canceled_at = None
 
     def __repr__(self):
         return f"title: {self.title}, \ndescription: {self.description}, \nstart_time: {self.start_time}, \nend_time: {self.end_time}, location: {self.location}"
@@ -35,6 +56,12 @@ class Events:
         if any(keyword in self.location.lower() for keyword in url_indicators):
             return True
         return False
+    
+    def cancel(self, reason, canceled_at):
+        """Cancel the event with a reason and timestamp."""
+        self.status = "CANCELED"
+        self.cancellation_reason = reason
+        self.canceled_at = canceled_at
     
     def validate_event_name(self, new_name: str) -> None:
             """
